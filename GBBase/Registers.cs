@@ -24,17 +24,16 @@ namespace GBBase
         [FieldOffset(7)] public byte h;
         [FieldOffset(6)] public ushort hl;
 
-        [FieldOffset(8)] private ushort _flags;
-        public ushort flags
+        public byte flags
         {
             get
             {
-                return _flags;
+                return f;
             }
 
             set
             {
-                _flags = (ushort)(value & 0xF0);
+                f = (byte)(value & 0xF0);
             }
         }
 
@@ -42,11 +41,11 @@ namespace GBBase
         {
             get
             {
-                return (_flags & 0x80) != 0;
+                return (f & 0x80) != 0;
             }
             set
             {
-                _flags = (ushort)(value ? _flags | 0x80 : _flags & (~0x80));
+                f = (byte)(value ? f | 0x80 : f & (~0x80));
             }
         }
 
@@ -54,11 +53,11 @@ namespace GBBase
         {
             get
             {
-                return (_flags & 0x40) != 0;
+                return (f & 0x40) != 0;
             }
             set
             {
-                _flags = (ushort)(value ? _flags | 0x40 : _flags & (~0x40));
+                f = (byte)(value ? f | 0x40 : f & (~0x40));
             }
         }
 
@@ -66,11 +65,11 @@ namespace GBBase
         {
             get
             {
-                return (_flags & 0x20) != 0;
+                return (f & 0x20) != 0;
             }
             set
             {
-                _flags = (ushort)(value ? _flags | 0x20 : _flags & (~0x20));
+                f = (byte)(value ? f | 0x20 : f & (~0x20));
             }
         }
 
@@ -78,11 +77,11 @@ namespace GBBase
         {
             get
             {
-                return (_flags & 0x10) != 0;
+                return (f & 0x10) != 0;
             }
             set
             {
-                _flags = (ushort)(value ? _flags | 0x10 : _flags & (~0x10));
+                f = (byte)(value ? f | 0x10 : f & (~0x10));
             }
         }
 
