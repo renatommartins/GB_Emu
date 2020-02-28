@@ -9,7 +9,7 @@ namespace GBC
     {
         static void Main(string[] args)
         {
-            BinaryReader binaryReader = new BinaryReader(File.OpenRead("E:\\Games\\GB\\Pokemon - Blue Version (UE) [S][!].gb"));
+            BinaryReader binaryReader = new BinaryReader(File.OpenRead("E:\\Projects\\Pokemon - Blue Version (UE) [S][!].gb"));
             binaryReader.BaseStream.Seek(GameboyHardware.programStartAddress, SeekOrigin.Begin);
 
             StreamWriter streamWriter = new StreamWriter(File.OpenWrite("E:\\dump.txt"));
@@ -38,7 +38,7 @@ namespace GBC
                             break;
                         case 2:
                             {
-                                ushort value = (ushort)((binaryReader.ReadByte() << 8) | (binaryReader.ReadByte() << 0));
+                                ushort value = (ushort)((binaryReader.ReadByte() << 0) | (binaryReader.ReadByte() << 8));
                                 disassembly = String.Format(instruction.disassembly, value);
                             }
                             break;
