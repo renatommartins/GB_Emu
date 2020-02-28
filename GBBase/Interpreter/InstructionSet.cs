@@ -100,6 +100,133 @@ namespace GBBase
                     }
                 }
             },
+            //0x05 DEC B
+            {
+                0x05,
+                new Instruction()
+                {
+                    disassembly = "DEC B",
+                     cycles = 1,
+                    operandLength = 0,
+                    method = (gameboy, operands) =>
+                    {
+                        gameboy.CPU.ALU.DecrementRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.B);
+                    }
+                }
+            },
+            //0x06 LD B, n8
+            {
+                0x06,
+                new Instruction()
+                {
+                    disassembly = "LD B, {0:X}",
+                    cycles = 2,
+                    operandLength = 1,
+                    method = (gameboy, operands) =>
+                    {
+                        gameboy.CPU.registers.B = operands[0];
+                    }
+                }
+            },
+            //0x07 RLC A
+            {
+                0x07,
+                new Instruction()
+                {
+                    disassembly = "RLC A",
+                    cycles = 1,
+                    operandLength = 0,
+                    method = (gameboy, operands) =>
+                    {
+                        gameboy.CPU.ALU.RotateRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.A, CPU.IALU.RotateDirection.Left, true);
+                    }
+                }
+            },
+            //0x08 LD n16, SP
+            {
+                0x08,
+                new Instruction()
+                {
+                    disassembly = "LD {0:X}, SP",
+                    cycles = 5,
+                    operandLength = 2,
+                    method = (gameboy, operands) =>
+                    {
+                        ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));
+                        gameboy.memory.WriteUshort(value, gameboy.CPU.registers.SP);
+                    }
+                }
+            },
+            //0x09 ADD HL, BC
+            {
+                0x09,
+                new Instruction()
+                {
+                    disassembly = "ADD HL, BC",
+                    cycles = 2,
+                    operandLength = 0,
+                    method = (gameboy, operands) =>
+                    {
+                        gameboy.CPU.ALU.AddUshort(gameboy.CPU.registers, CPU.IALU.TargetRegister.HL, gameboy.CPU.registers.BC, false);
+                    }
+                }
+            },
+            //0x0A LD A, (BC)
+            {
+                0x0A,
+                new Instruction()
+                {
+                    disassembly = "LD A, (BC)",
+                    cycles = 2,
+                    operandLength = 0,
+                    method = (gameboy, operands) =>
+                    {
+                        gameboy.CPU.registers.A = gameboy.memory.ReadByte(gameboy.CPU.registers.BC);
+                    }
+                }
+            },
+            //0x0B DEC BC
+            {
+                0x0B,
+                new Instruction()
+                {
+                    disassembly = "DEC BC",
+                    cycles = 2,
+                    operandLength = 0,
+                    method = (gameboy, operands) =>
+                    {
+                        gameboy.CPU.ALU.DecrementRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.BC);
+                    }
+                }
+            },
+            //0x0C INC C
+            {
+                0x0C,
+                new Instruction()
+                {
+                    disassembly = "INC C",
+                    cycles = 1,
+                    operandLength = 0,
+                    method = (gameboy, operands) =>
+                    {
+                        gameboy.CPU.ALU.IncrementRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.C);
+                    }
+                }
+            },
+            //0x0D DEC C
+            {
+                0x0D,
+                new Instruction()
+                {
+                    disassembly = "DEC C",
+                    cycles = 1,
+                    operandLength = 0,
+                    method = (gameboy, operands) =>
+                    {
+                        gameboy.CPU.ALU.DecrementRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.C);
+                    }
+                }
+            },
             //0x18 JR n8
             {
                 0x18,
