@@ -22,12 +22,19 @@ namespace GBBase.CPU
             HL
         }
 
+        public enum RotateDirection
+        {
+            Left,
+            Right
+        }
+
         public void AddByte(IRegisters registers, TargetRegister targetRegister, byte value, bool useCarry);
         public void AddSbyte(IRegisters registers, TargetRegister targetRegister, sbyte value, bool useCarry);
         public void AddUshort(IRegisters registers, TargetRegister targetRegister, ushort value, bool useCarry);
         public void SubtractByte(IRegisters registers, TargetRegister targetRegister, byte value, bool useCarry);
         public void SubtractSbyte(IRegisters registers, TargetRegister targetRegister, sbyte value, bool useCarry);
         public void SubtractUshort(IRegisters registers, TargetRegister targetRegister, ushort value, bool useCarry);
+        public void RotateRegister(IRegisters registers, TargetRegister targetRegister, RotateDirection direction, bool useCarry);
         public void IncrementRegister(IRegisters registers, TargetRegister targetRegister);
         public void IncrementMemory(IRegisters registers, Memory.IMemory memory, ushort address);
         public void DecrementRegister(IRegisters registers, TargetRegister targetRegister);

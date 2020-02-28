@@ -887,5 +887,84 @@ namespace GBBase.CPU
 
             //don't register
         }
+
+        public void RotateRegister(IRegisters registers, IALU.TargetRegister targetRegister, IALU.RotateDirection direction, bool useCarry)
+        {
+            int result;
+            switch (targetRegister)
+            {
+                case IALU.TargetRegister.A:
+                    result = registers.A;
+                    break;
+                case IALU.TargetRegister.F:
+                    result = registers.F;
+                    break;
+                case IALU.TargetRegister.B:
+                    result = registers.B;
+                    break;
+                case IALU.TargetRegister.C:
+                    result = registers.C;
+                    break;
+                case IALU.TargetRegister.D:
+                    result = registers.D;
+                    break;
+                case IALU.TargetRegister.E:
+                    result = registers.E;
+                    break;
+                case IALU.TargetRegister.H:
+                    result = registers.H;
+                    break;
+                case IALU.TargetRegister.L:
+                    result = registers.L;
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+
+            if (direction == IALU.RotateDirection.Left)
+            {
+                if ((result & 0x80) > 0)
+                    registers.FullCarryFlag = true;
+                result = (result << 1) | ((result & 0x80) > 0? 0x01 : 0x00);
+            }
+            else
+            {
+                if ((result & 0x01) > 0)
+                    registers.FullCarryFlag = true;
+                result = (result >> 1) | ((result & 0x01) > 0? 0x80 : 0x00);
+            }
+
+            registers.NegativeFlag = false;
+            registers.ZeroFlag = false;
+            registers.HalfCarryFlag = false;
+
+            switch (targetRegister)
+            {
+                case IALU.TargetRegister.A:
+                    registers.A = (byte)result;
+                    break;
+                case IALU.TargetRegister.F:
+                    registers.F = (byte)result;
+                    break;
+                case IALU.TargetRegister.B:
+                    registers.B = (byte)result;
+                    break;
+                case IALU.TargetRegister.C:
+                    registers.C = (byte)result;
+                    break;
+                case IALU.TargetRegister.D:
+                    registers.D = (byte)result;
+                    break;
+                case IALU.TargetRegister.E:
+                    registers.E = (byte)result;
+                    break;
+                case IALU.TargetRegister.H:
+                    registers.H = (byte)result;
+                    break;
+                case IALU.TargetRegister.L:
+                    registers.L = (byte)result;
+                    break;
+            }
+        }
     }
 }
