@@ -27,16 +27,6 @@ namespace GBBase
             }
         }
 
-        private static bool EvaluateHalfCarryAdd(byte value, byte add)
-        {
-            return ((((value & 0x0F) + (add & 0x0F)) & 0x10) == 0x10);
-        }
-
-        private static bool EvaluateHalfCarrySubtraction(byte value, byte sub)
-        {
-            return ((value & 0x0F) - (sub & 0x0F)) < 0;
-        }
-
         private static Dictionary<byte, Instruction> _instructionSet = new Dictionary<byte, Instruction>()
         {
             //0x00 NOP
