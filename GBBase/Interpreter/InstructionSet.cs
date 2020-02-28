@@ -58,13 +58,13 @@ namespace GBBase
                 0x01,
                 new Instruction()
                 {
-                    disassembly = "LD BC, {0:D}",
+                    disassembly = "LD BC, 0x{0:X}",
                     cycles = 3,
                     operandLength = 2,
                     method = (gameboy, operands) =>
                     {
-                        ushort value = BitConverter.ToUInt16(operands, 0);
-                        gameboy.registers.bc = value;
+                        ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));
+                        gameboy.CPU.registers.BC = value;
                     }
                 }
             },
@@ -78,7 +78,7 @@ namespace GBBase
                     operandLength = 0,
                     method = (gameboy, operands) =>
                     {
-                        gameboy.ram[gameboy.registers.bc] = gameboy.registers.a;
+                        gameboy.memory.WriteByte(gameboy.CPU.registers.BC, gameboy.CPU.registers.A);
                     }
                 }
             },
@@ -92,7 +92,7 @@ namespace GBBase
                     operandLength = 0,
                     method = (gameboy, operands) =>
                     {
-                        gameboy.registers.bc++;
+                        gameboy.CPU.ALU.IncrementRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.BC);
                     }
                 }
             },
@@ -106,15 +106,7 @@ namespace GBBase
                     operandLength = 0,
                     method = (gameboy, operands) =>
                     {
-                        gameboy.registers.NegativeFlag = false;
-                        gameboy.registers.HalfCarryFlag = EvaluateHalfCarryAdd(gameboy.registers.b, 1);
-                        gameboy.registers.b++;
-                        
-                        if(gameboy.registers.b == 0)
-                        {
-                            gameboy.registers.ZeroFlag = true;
-                        }
-                        
+                        gameboy.CPU.ALU.IncrementRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.B);
                     }
                 }
             },
@@ -123,14 +115,14 @@ namespace GBBase
                 0x18,
                 new Instruction()
                 {
-                    disassembly = "JR {0:D}",
+                    disassembly = "JR 0x{0:X}",
                     cycles = 3,
                     operandLength = 1,
                     method = (gameboy, operands) =>
                     {
                         sbyte value = (sbyte)operands[0];
-                        int newAddress = gameboy.registers.pc;
-                        gameboy.registers.pc = (ushort)(newAddress + value);
+                        int newAddress = gameboy.CPU.registers.PC;
+                        gameboy.CPU.registers.PC = (ushort)(newAddress + value);
                     }
                 }
             },
@@ -139,16 +131,16 @@ namespace GBBase
                 0x28,
                 new Instruction()
                 {
-                    disassembly = "JR Z, {0:D}",
+                    disassembly = "JR Z, 0x{0:X}",
                     cycles = 3,//2?
                     operandLength = 1,
                     method = (gameboy, operands) =>
                     {
-                        if(gameboy.registers.ZeroFlag)
+                        if(gameboy.CPU.registers.ZeroFlag)
                         {
                             sbyte value = (sbyte)operands[0];
-                            int newAddress = gameboy.registers.pc;
-                            gameboy.registers.pc = (ushort)(newAddress + value);
+                            int newAddress = gameboy.CPU.registers.PC;
+                            gameboy.CPU.registers.PC = (ushort)(newAddress + value);
                         }
                     }
                 }
@@ -158,12 +150,12 @@ namespace GBBase
                 0x3E,
                 new Instruction()
                 {
-                    disassembly = "LD A, {0:D}",
+                    disassembly = "LD A, 0x{0:X}",
                     cycles = 2,
                     operandLength = 1,
                     method = (gameboy, operands) =>
                     {
-                        gameboy.registers.a = operands[0];
+                        gameboy.CPU.registers.A = operands[0];
                     }
                 }
             },
@@ -177,11 +169,22 @@ namespace GBBase
                     operandLength = 0,
                     method = (gameboy, operands) =>
                     {
-                        gameboy.registers.a ^= gameboy.registers.a;
-                        if(gameboy.registers.a == 0)
-                        {
-                            gameboy.registers.ZeroFlag = true;
-                        }
+                        gameboy.CPU.ALU.XorBitwiseByte(gameboy.CPU.registers, CPU.IALU.TargetRegister.A, gameboy.CPU.registers.A);
+                    }
+                }
+            },
+            //0xC3 JP n16
+            {
+                0xC3,
+                new Instruction()
+                {
+                    disassembly = "JP 0x{0:X}",
+                    cycles = 1,
+                    operandLength = 2,
+                    method = (gameboy, operands) =>
+                    {
+                        ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));
+                        gameboy.CPU.registers.PC = value;
                     }
                 }
             },
@@ -190,13 +193,13 @@ namespace GBBase
                 0xEA,
                 new Instruction()
                 {
-                    disassembly = "LD {0:D}, A",
+                    disassembly = "LD 0x{0:X}, A",
                     cycles = 4,
                     operandLength = 2,
                     method = (gameboy, operands) =>
                     {
-                        ushort value = (ushort)((operands[0] << 8) | (operands[1] << 0));//BitConverter.ToUInt16(operands, 0);
-                        gameboy.ram[value] = gameboy.registers.a;
+                        ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));
+                        gameboy.memory.WriteByte(value, gameboy.CPU.registers.A);
                     }
                 }
             },
@@ -205,22 +208,12 @@ namespace GBBase
                 0xFE,
                 new Instruction()
                 {
-                    disassembly = "CP {0:D}",
+                    disassembly = "CP 0x{0:X}",
                     cycles = 2,
                     operandLength = 1,
                     method = (gameboy, operands) =>
                     {
-                        gameboy.registers.NegativeFlag = true;
-                        gameboy.registers.HalfCarryFlag = EvaluateHalfCarrySubtraction(gameboy.registers.a, operands[0]);
-                        if(operands[0] > gameboy.registers.a)
-                        {
-                            gameboy.registers.FullCarryFlag = true;
-                        }
-                        gameboy.registers.a -= operands[0];
-                        if(gameboy.registers.a == 0)
-                        {
-                            gameboy.registers.ZeroFlag = true;
-                        }
+                        gameboy.CPU.ALU.CompareByte(gameboy.CPU.registers, CPU.IALU.TargetRegister.A, operands[0]);
                     }
                 }
             },

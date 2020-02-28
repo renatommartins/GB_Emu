@@ -34,9 +34,8 @@ namespace GBBase
         }
         public const int programStartAddress = 0x150;
 
-        public Registers registers;
-        public byte[] rom = new byte[1024*32];
-        public byte[] ram = new byte[1024*8];
+        public CPU.ICPU CPU = new CPU.CPU();
+        public Memory.IMemory memory = new Memory.MemoryController();
         public Pixel[,] screenOutput = new Pixel[160,144];
     }
 }
