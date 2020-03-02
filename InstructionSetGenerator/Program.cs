@@ -331,7 +331,7 @@ namespace InstructionSetGenerator
             StreamWriter writer = File.CreateText("E:\\opCodeDumpDirty.txt");
             for(int i=0; i<opCodeList.Count; i++)
             {
-                cleanOpCodeList.Add(Regex.Replace(opCodeList[i], "<td><abbr title=[a-z,A-Z,\", ', ,\\-,+,0-9,\\(,\\)]*>|<\\/abbr><\\/td>", ""));
+                cleanOpCodeList.Add(Regex.Replace(opCodeList[i], "<td><abbr title=[a-z,A-Z,\", ', ,\\-,+,0-9,\\(,\\)]*>|<\\/abbr><\\/td>\\n", ""));
                 writer.Write(opCodeList[i]);
             }
             writer.Close();
