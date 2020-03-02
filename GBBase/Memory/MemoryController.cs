@@ -18,10 +18,10 @@ namespace GBBase.Memory
             target = null;
             offset = 0;
 
-            if(address >= 0x0150 && address < 0x8000)
+            if(address >= 0x0000 && address < 0x8000)
             {
                 target = rom;
-                offset = address - 0x0150;
+                offset = address - 0x0000;
             }
             else if(address >= 0x8000 && address < 0x9800)
             {
