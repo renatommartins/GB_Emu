@@ -16,8 +16,11 @@ namespace InstructionSetGenerator
 
         static bool isFetching = true;
         static HttpClient httpClient = new HttpClient();
+        static string dirtyDumpPath = "opCodeDumpDirty.txt";
+        static string cleanDumpPath = "opCodeDumpClean.txt";
 
         static bool isParsing = true;
+        static string instructionSetClassPath = "InstructionSet.cs";
         static Dictionary<string, InstructionParser> instructionParsers = new System.Collections.Generic.Dictionary<string, InstructionParser>
         {
             #region Loads
@@ -287,7 +290,7 @@ namespace InstructionSetGenerator
 
         static void Main(string[] args)
         {
-            if(!File.Exists("E:\\opCodeDumpClean.txt"))
+            if(!File.Exists(cleanDumpPath))
             {
                 Fetching();
 
@@ -299,7 +302,7 @@ namespace InstructionSetGenerator
             else
             {
                 opCodes = new List<string>();
-                StreamReader reader = new StreamReader(File.OpenRead("E:\\opCodeDumpClean.txt"));
+                StreamReader reader = new StreamReader(File.OpenRead(cleanDumpPath));
                 while(!reader.EndOfStream)
                 {
                     opCodes.Add(reader.ReadLine());
@@ -328,7 +331,7 @@ namespace InstructionSetGenerator
 
             Console.WriteLine(opCodeList.Count);
 
-            StreamWriter writer = File.CreateText("E:\\opCodeDumpDirty.txt");
+            StreamWriter writer = File.CreateText(dirtyDumpPath);
             for(int i=0; i<opCodeList.Count; i++)
             {
                 cleanOpCodeList.Add(Regex.Replace(opCodeList[i], "<td><abbr title=[a-z,A-Z,\", ', ,\\-,+,0-9,\\(,\\)]*>|<\\/abbr><\\/td>\\n", ""));
@@ -337,7 +340,7 @@ namespace InstructionSetGenerator
             writer.Close();
             writer.Dispose();
 
-            writer = File.CreateText("E:\\opCodeDumpClean.txt");
+            writer = File.CreateText(cleanDumpPath);
             for(int i=0; i<cleanOpCodeList.Count; i++)
             {
                 writer.Write(cleanOpCodeList[i]);
@@ -392,6 +395,7 @@ namespace InstructionSetGenerator
             for (int i = 0; i < opCodes.Count && i <256; i++)
             {
                 string opCodeKey = opCodes[i].Split(' ')[0];
+                //Console.WriteLine(opCodeKey);
                 if (instructionParsers.ContainsKey(opCodeKey))
                 {
                     string generatedCode = null;
@@ -412,7 +416,7 @@ namespace InstructionSetGenerator
                 "}\n");
             #endregion
 
-            StreamWriter writer = File.CreateText("E:\\InstructionSet.cs");
+            StreamWriter writer = File.CreateText(instructionSetClassPath);
             writer.Write(builder.ToString());
             writer.Close();
             writer.Dispose();
