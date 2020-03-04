@@ -35,24 +35,7 @@ namespace InstructionSetGenerator
                     int operandLength = 0;
                     string[] instructionCodeLines = new string[0];
 
-                    textFormatter.AppendLine($"//{instruction}");
-                    textFormatter.AppendLine("{");
-                    textFormatter.AppendLine($"0x{index.ToString("X2")},", TextFormatter.IndentChange.Increase);
-                    textFormatter.AppendLine("new Instruction()");
-                    textFormatter.AppendLine("{");
-                    textFormatter.AppendLine($"disassembly = \"{disassembly}\",", TextFormatter.IndentChange.Increase);
-                    textFormatter.AppendLine($"cycles: {cycles},");
-                    textFormatter.AppendLine($"operandLength: {operandLength},");
-                    textFormatter.AppendLine("method = (gameboy, length) =>");
-                    textFormatter.AppendLine("{");
-                    textFormatter.IncreaseIndentLevel();
-                    for(int i=0; i<instructionCodeLines.Length; i++)
-                    {
-                        textFormatter.AppendLine(instructionCodeLines[i]);
-                    }
-                    textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
-                    textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
-                    textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
                 }
             },
             {
@@ -306,6 +289,28 @@ namespace InstructionSetGenerator
             },
             #endregion
         };
+
+        static void WriteInstruction(TextFormatter textFormatter, string comment, int opCode, string disassembly, int cycles, int operandLength, string[] codeLines)
+        {
+            textFormatter.AppendLine($"//{comment}");
+            textFormatter.AppendLine("{");
+            textFormatter.AppendLine($"0x{opCode.ToString("X2")},", TextFormatter.IndentChange.Increase);
+            textFormatter.AppendLine("new Instruction()");
+            textFormatter.AppendLine("{");
+            textFormatter.AppendLine($"disassembly = \"{disassembly}\",", TextFormatter.IndentChange.Increase);
+            textFormatter.AppendLine($"cycles: {cycles},");
+            textFormatter.AppendLine($"operandLength: {operandLength},");
+            textFormatter.AppendLine("method = (gameboy, length) =>");
+            textFormatter.AppendLine("{");
+            textFormatter.IncreaseIndentLevel();
+            for (int i = 0; i < codeLines.Length; i++)
+            {
+                textFormatter.AppendLine(codeLines[i]);
+            }
+            textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
+            textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
+            textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
+        }
 
         static void Main(string[] args)
         {
