@@ -30,7 +30,7 @@ namespace InstructionSetGenerator
                 {
                     string[] parameters = instruction.Split(' ')[1].Split(',');
 
-                    string disassembly = "";
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
                     int cycles = 0;
                     int operandLength = 0;
                     string[] instructionCodeLines = new string[0];
