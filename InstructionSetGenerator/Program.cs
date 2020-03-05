@@ -303,7 +303,7 @@ namespace InstructionSetGenerator
             textFormatter.AppendLine("method = (gameboy, operands) =>");
             textFormatter.AppendLine("{");
             textFormatter.IncreaseIndentLevel();
-            for (int i = 0; i < codeLines.Length; i++)
+            for (int i = 0; codeLines != null && i < codeLines.Length; i++)
             {
                 textFormatter.AppendLine(codeLines[i]);
             }
