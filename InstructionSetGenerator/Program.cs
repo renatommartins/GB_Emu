@@ -36,6 +36,113 @@ namespace InstructionSetGenerator
                     int operandLength = 8888;
                     string[] instructionCodeLines = new string[0];
 
+                    if(Regex.IsMatch(parameters[0], "(^A$)|(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                    {
+                        if(Regex.IsMatch(parameters[1], "(^A$)|(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                        {
+                            cycles = 1;
+                            operandLength = 0;
+                            instructionCodeLines = new string[]
+                            {
+                                $"gameboy.CPU.registers.{parameters[0]} = gameboy.CPU.registers.{parameters[1]};"
+                            };
+                        }
+                        else if(Regex.IsMatch(parameters[1], "n{1}"))
+                        {
+                            cycles = 2;
+                            operandLength = 1;
+                            instructionCodeLines = new string[]
+                            {
+                                $"gameboy.CPU.registers.{parameters[0]} = operands[0];"
+                            };
+                        }
+                        if(Regex.IsMatch(parameters[1], "(^\\(AF\\)$)|(^\\(BC\\)$)|(^\\(DE\\)$)|(^\\(HL\\)$)"))
+                        {
+                            cycles = 2;
+                            operandLength = 0;
+                            instructionCodeLines = new string[]
+                            {
+                                $"gameboy.CPU.registers.{parameters[0]} = gameboy.memory.ReadByte(gameboy.CPU.registers.{Regex.Replace(parameters[1],"\\(|\\)","")});"
+                            };
+                        }
+                    }
+                    else if(Regex.IsMatch(parameters[0], "(^AF$)|(^BC$)|(^DE$)|(^HL$)"))
+                    {
+                        cycles = 3;
+                        operandLength = 2;
+                        instructionCodeLines = new string[]
+                        {
+                            $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                            $"gameboy.CPU.registers.{parameters[0]} = value;"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "SP"))
+                    {
+                        if(Regex.IsMatch(parameters[1], "HL"))
+                        {
+                            cycles = 2;
+                            operandLength = 0;
+                            instructionCodeLines = new string[]
+                            {
+                                $"gameboy.CPU.registers.{parameters[0]} = gameboy.CPU.registers.{parameters[1]};"
+                            };
+                        }
+                        else
+                        {
+                            cycles = 3;
+                            operandLength = 2;
+                            instructionCodeLines = new string[]
+                            {
+                                $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                                $"gameboy.CPU.registers.{parameters[0]} = value;"
+                            };
+                        }
+                    }
+                    else if(Regex.IsMatch(parameters[0], "\\(nn\\)"))
+                    {
+                        if(Regex.IsMatch(parameters[1], "A"))
+                        {
+                            cycles = 4;
+                            operandLength = 2;
+                            instructionCodeLines = new string[]
+                            {
+                                $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                                $"gameboy.memory.WriteByte(value, gameboy.CPU.registers.{parameters[1]});"
+                            };
+                        }
+                        else
+                        {
+                            cycles = 5;
+                            operandLength = 2;
+                            instructionCodeLines = new string[]
+                            {
+                                $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                                $"gameboy.memory.WriteUshort(value, gameboy.CPU.registers.{parameters[1]});"
+                            };
+                        } 
+                    }
+                    else if(Regex.IsMatch(parameters[0], "(^\\(AF\\)$)|(^\\(BC\\)$)|(^\\(DE\\)$)|(^\\(HL\\)$)"))
+                    {
+                        if(Regex.IsMatch(parameters[1], "n{1}"))
+                        {
+                            cycles = 3;
+                            operandLength = 1;
+                            instructionCodeLines = new string[]
+                            {
+                                $"gameboy.memory.WriteByte(gameboy.CPU.registers.{Regex.Replace(parameters[0],"\\(|\\)","")}, operands[0]);"
+                            };
+                        }
+                        else if(Regex.IsMatch(parameters[1], "(^A$)|(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                        {
+                            cycles = 2;
+                            operandLength = 0;
+                            instructionCodeLines = new string[]
+                            {
+                                $"gameboy.memory.WriteByte(gameboy.CPU.registers.{Regex.Replace(parameters[0],"\\(|\\)","")}, gameboy.CPU.registers.{parameters[1]});"
+                            };
+                        }  
+                    }
+
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
                 }
             },
