@@ -309,7 +309,7 @@ namespace InstructionSetGenerator
             }
             textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
             textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
-            textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
+            textFormatter.AppendLine("},", TextFormatter.IndentChange.Decrease);
         }
 
         static void Main(string[] args)
