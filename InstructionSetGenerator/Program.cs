@@ -298,9 +298,9 @@ namespace InstructionSetGenerator
             textFormatter.AppendLine("new Instruction()");
             textFormatter.AppendLine("{");
             textFormatter.AppendLine($"disassembly = \"{disassembly}\",", TextFormatter.IndentChange.Increase);
-            textFormatter.AppendLine($"cycles: {cycles},");
-            textFormatter.AppendLine($"operandLength: {operandLength},");
-            textFormatter.AppendLine("method = (gameboy, length) =>");
+            textFormatter.AppendLine($"cycles = {cycles},");
+            textFormatter.AppendLine($"operandLength = {operandLength},");
+            textFormatter.AppendLine("method = (gameboy, operands) =>");
             textFormatter.AppendLine("{");
             textFormatter.IncreaseIndentLevel();
             for (int i = 0; i < codeLines.Length; i++)
