@@ -420,6 +420,7 @@ namespace InstructionSetGenerator
             textFormatter.AppendLine("");
             textFormatter.AppendLine("private static Dictionary<byte, Instruction> _instructionSet = new Dictionary<byte, Instruction>()");
             textFormatter.AppendLine("{");
+            textFormatter.IncreaseIndentLevel();
             #endregion
 
             for (int i = 0; i < opCodes.Count && i <256; i++)
@@ -440,7 +441,7 @@ namespace InstructionSetGenerator
             }
 
             #region Base File End
-            textFormatter.AppendLine("};");
+            textFormatter.AppendLine("};", TextFormatter.IndentChange.Decrease);
             textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
             textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
             #endregion
