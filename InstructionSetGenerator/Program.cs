@@ -388,6 +388,7 @@ namespace InstructionSetGenerator
         {
             System.Text.StringBuilder builder = new System.Text.StringBuilder();
             TextFormatter textFormatter = new TextFormatter("\t");
+            int unparsedCount = 0;
 
             #region Base File Start
             textFormatter.AppendLine("using System;");
@@ -431,8 +432,12 @@ namespace InstructionSetGenerator
                 if (instructionParsers.ContainsKey(opCodeKey))
                 {
                     string generatedCode = null;
-                    instructionParsers[opCodeKey]?.Invoke(i, opCodes[i], textFormatter);
-                    if(generatedCode != null)
+                    if (instructionParsers[opCodeKey] != null)
+                        instructionParsers[opCodeKey].Invoke(i, opCodes[i], textFormatter);
+                    else
+                        unparsedCount++;
+
+                    if (generatedCode != null)
                         builder.Append(generatedCode);
                 }
                 else
@@ -451,6 +456,8 @@ namespace InstructionSetGenerator
             writer.Write(textFormatter.ToString());
             writer.Close();
             writer.Dispose();
+
+            Console.WriteLine($"Couldn't parse {unparsedCount} opCodes");
 
             isParsing = false;
         }
