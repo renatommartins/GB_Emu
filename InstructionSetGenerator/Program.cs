@@ -397,7 +397,7 @@ namespace InstructionSetGenerator
             textFormatter.AppendLine("{");
             textFormatter.AppendLine("public partial class Interpreter", TextFormatter.IndentChange.Increase);
             textFormatter.AppendLine("{");
-            textFormatter.AppendLine("public delegate void IntructionMethod(GameboyHardware gameboy, params byte[] operands);", TextFormatter.IndentChange.Increase);
+            textFormatter.AppendLine("public delegate void InstructionMethod(GameboyHardware gameboy, params byte[] operands);", TextFormatter.IndentChange.Increase);
             textFormatter.AppendLine("");
             textFormatter.AppendLine("public struct Instruction");
             textFormatter.AppendLine("{");
