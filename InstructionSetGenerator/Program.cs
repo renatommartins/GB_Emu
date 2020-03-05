@@ -24,6 +24,7 @@ namespace InstructionSetGenerator
         static Dictionary<string, InstructionParser> instructionParsers = new System.Collections.Generic.Dictionary<string, InstructionParser>
         {
             #region Loads
+            //LD
             {
                 "LD",
                 (int index, string instruction , TextFormatter textFormatter) =>
@@ -146,36 +147,212 @@ namespace InstructionSetGenerator
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
                 }
             },
+            //LDD
             {
                 "LDD",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 2;
+                    int operandLength = 0;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "^\\(HL\\)$"))
+                    {
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.memory.WriteByte(gameboy.CPU.registers.HL, gameboy.CPU.registers.A);",
+                            $"gameboy.CPU.registers.HL--;"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^A$"))
+                    {
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.registers.A = gameboy.memory.ReadByte(gameboy.CPU.registers.HL);",
+                            $"gameboy.CPU.registers.HL--;"
+                        };
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
+            //LDI
             {
                 "LDI",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 2;
+                    int operandLength = 0;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "^\\(HL\\)$"))
+                    {
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.memory.WriteByte(gameboy.CPU.registers.HL, gameboy.CPU.registers.A);",
+                            $"gameboy.CPU.registers.HL++;"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^A$"))
+                    {
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.registers.A = gameboy.memory.ReadByte(gameboy.CPU.registers.HL);",
+                            $"gameboy.CPU.registers.HL++;"
+                        };
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
+            //LDH
             {
                 "LDH",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 9999;
+                    int operandLength = 8888;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "^\\(n\\)$"))
+                    {
+                        cycles = 3;
+                        operandLength = 1;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.memory.WriteByte((ushort)(0xFF00 + operands[0]), gameboy.CPU.registers.A);"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^\\(C\\)$"))
+                    {
+                        cycles = 2;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.memory.WriteByte((ushort)(0xFF00 + gameboy.CPU.registers.C), gameboy.CPU.registers.A);"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^A$"))
+                    {
+                        cycles = 3;
+                        operandLength = 1;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.registers.A = gameboy.memory.ReadByte((ushort)(0xFF00 + operands[0]));"
+                        };
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
+            //LDHL
             {
                 "LDHL",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 3;
+                    int operandLength = 1;
+                    string[] instructionCodeLines = new string[]
+                    {
+                        $"gameboy.CPU.registers.HL = (ushort)(gameboy.CPU.registers.SP + (sbyte)operands[0]);"
+                    };
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
+            //PUSH
             {
                 "PUSH",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 4;
+                    int operandLength = 1;
+                    string[] instructionCodeLines = new string[]
+                    {
+                        $"gameboy.memory.WriteUshort(gameboy.CPU.registers.SP++, gameboy.CPU.registers.{parameters[0]});"
+                    };
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
+            //POP
             {
                 "POP",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 3;
+                    int operandLength = 1;
+                    string[] instructionCodeLines = new string[]
+                    {
+                        $"gameboy.CPU.registers.{parameters[0]} = gameboy.memory.ReadUshort(gameboy.CPU.registers.SP--);"
+                    };
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             #endregion
 
             #region Arithmetic
             {
                 "ADD",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 9999;
+                    int operandLength = 8888;
+                    string[] instructionCodeLines = new string[0];
+                    
+                    if(Regex.IsMatch(parameters[0], "(^A$)|(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                    {
+                        if(Regex.IsMatch(parameters[1], "(^A$)|(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                        {
+                            cycles = 1;
+                            operandLength = 0;
+                            instructionCodeLines = new string[]
+                            {
+                                $"gameboy.CPU.ALU.AddByte(gameboy.CPU.registers, CPU.IALU.TargetRegister.{parameters[0]}, gameboy.CPU.registers.{parameters[1]}, false);"
+                            };
+                        }
+                        else if(Regex.IsMatch(parameters[1], "^\\(HL\\)$"))
+                        {
+                            cycles = 2;
+                            operandLength = 1;
+                            instructionCodeLines = new string[]
+                            {
+                                $"gameboy.CPU.ALU.AddByte(gameboy.CPU.registers, CPU.IALU.TargetRegister.{parameters[0]}, operands[0], false);"
+                            };
+                        }
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             {
                 "ADC",
