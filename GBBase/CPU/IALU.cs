@@ -19,7 +19,8 @@ namespace GBBase.CPU
             DE,
             H,
             L,
-            HL
+            HL,
+            SP
         }
 
         public enum RotateDirection

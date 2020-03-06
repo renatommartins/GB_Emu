@@ -564,6 +564,10 @@ namespace GBBase.CPU
                     is16Bit = true;
                     result = registers.HL;
                     break;
+                case IALU.TargetRegister.SP:
+                    is16Bit = true;
+                    result = registers.SP;
+                    break;
                 default:
                     throw new ArgumentException();
             }
@@ -605,6 +609,12 @@ namespace GBBase.CPU
                     break;
                 case IALU.TargetRegister.L:
                     registers.L = (byte)result;
+                    break;
+                case IALU.TargetRegister.HL:
+                    registers.HL = (byte)result;
+                    break;
+                case IALU.TargetRegister.SP:
+                    registers.SP = (byte)result;
                     break;
             }
         }
