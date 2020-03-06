@@ -317,6 +317,7 @@ namespace InstructionSetGenerator
             #endregion
 
             #region Arithmetic
+            //ADD
             {
                 "ADD",
                 (int index, string instruction , TextFormatter textFormatter) =>
