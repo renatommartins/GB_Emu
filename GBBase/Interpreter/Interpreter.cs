@@ -9,6 +9,7 @@ namespace GBBase
         public void Execute(GameboyHardware gameboy, byte opcode, params byte[] operands)
         {
             AssertOperands(_instructionSet[opcode].operandLength, operands);
+            gameboy.CPU.BusyCycles += _instructionSet[opcode].cycles;
             _instructionSet[opcode].method(gameboy, operands);
         }
 
