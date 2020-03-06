@@ -788,9 +788,49 @@ namespace InstructionSetGenerator
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
                 }
             },
+            //DEC
             {
                 "DEC",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 9999;
+                    int operandLength = 8888;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "(^A$)|(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                    {
+                        cycles = 1;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.DecrementRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.{parameters[0]});"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^\\(HL\\)$"))
+                    {
+                        cycles = 3;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.DecrementMemory(gameboy.CPU.registers, gameboy.memory, CPU.IALU.TargetRegister.HL);"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "(^AF$)|(^BC$)|(^DE$)|(^HL$)|(^SP$)"))
+                    {
+                        cycles = 2;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.DecrementRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.{parameters[0]});"
+                        };
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             #endregion
 
