@@ -347,9 +347,50 @@ namespace InstructionSetGenerator
                             operandLength = 1;
                             instructionCodeLines = new string[]
                             {
+                                $"gameboy.CPU.ALU.AddByte(" +
+                                $"gameboy.CPU.registers, " +
+                                $"CPU.IALU.TargetRegister.{parameters[0]}, " +
+                                $"gameboy.memory.ReadByte(gameboy.CPU.registers.HL), " +
+                                $"false" +
+                                $");"
+                            };
+                        }
+                        else
+                        {
+                            cycles = 2;
+                            operandLength = 2;
+                            instructionCodeLines = new string[]
+                            {
                                 $"gameboy.CPU.ALU.AddByte(gameboy.CPU.registers, CPU.IALU.TargetRegister.{parameters[0]}, operands[0], false);"
                             };
                         }
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^HL$"))
+                    {
+                        cycles = 2;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.AddUshort(gameboy.CPU.registers, CPU.IALU.TargetRegister.{parameters[0]}, gameboy.CPU.registers.{parameters[1]}, false);"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^SP$"))
+                    {
+                        instruction += " *NOT USING ALU IMPLEMENTATION!!!";
+                        cycles = 4;
+                        operandLength = 1;
+                        instructionCodeLines = new string[]
+                        {
+                            "int originalValue = gameboy.CPU.registers.SP;",
+                            "int result = gameboy.CPU.registers.SP + operands[0];",
+                            "gameboy.CPU.registers.SP = (ushort)result;",
+                            "gameboy.CPU.registers.NegativeFlag = false;",
+                            "gameboy.CPU.registers.ZeroFlag = false;",
+                            "if ((((originalValue & 0x0F) + (originalValue & 0x0F)) & 0x10) == 0x10)",
+                            "\tgameboy.CPU.registers.HalfCarryFlag = true;",
+                            "if (result > byte.MaxValue)",
+                            "\tgameboy.CPU.registers.FullCarryFlag = true;"
+                        };
                     }
 
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
