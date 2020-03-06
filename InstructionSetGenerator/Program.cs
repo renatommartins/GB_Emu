@@ -600,9 +600,53 @@ namespace InstructionSetGenerator
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
                 }
             },
+            //OR
             {
                 "OR",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 9999;
+                    int operandLength = 8888;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "(^A$)|(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                    {
+                        cycles = 1;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.OrBitwiseByte(gameboy.CPU.registers, CPU.IALU.TargetRegister.A, gameboy.CPU.registers.{parameters[0]});"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^\\(HL\\)$"))
+                    {
+                        cycles = 2;
+                        operandLength = 1;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.OrBitwiseByte(" +
+                            $"gameboy.CPU.registers, " +
+                            $"CPU.IALU.TargetRegister.A, " +
+                            $"gameboy.memory.ReadByte(gameboy.CPU.registers.HL)" +
+                            $");"
+                        };
+                    }
+                    else
+                    {
+                        cycles = 2;
+                        operandLength = 2;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.OrBitwiseByte(gameboy.CPU.registers, CPU.IALU.TargetRegister.A, operands[0]);"
+                        };
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             {
                 "XOR",
