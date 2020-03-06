@@ -772,7 +772,7 @@ namespace InstructionSetGenerator
                         operandLength = 0;
                         instructionCodeLines = new string[]
                         {
-                            $"gameboy.CPU.ALU.IncrementMemory(gameboy.CPU.registers, gameboy.memory, CPU.IALU.TargetRegister.HL);"
+                            $"gameboy.CPU.ALU.IncrementMemory(gameboy.CPU.registers, gameboy.memory, gameboy.CPU.registers.HL);"
                         };
                     }
                     else if(Regex.IsMatch(parameters[0], "(^AF$)|(^BC$)|(^DE$)|(^HL$)|(^SP$)"))
@@ -816,7 +816,7 @@ namespace InstructionSetGenerator
                         operandLength = 0;
                         instructionCodeLines = new string[]
                         {
-                            $"gameboy.CPU.ALU.DecrementMemory(gameboy.CPU.registers, gameboy.memory, CPU.IALU.TargetRegister.HL);"
+                            $"gameboy.CPU.ALU.DecrementMemory(gameboy.CPU.registers, gameboy.memory, gameboy.CPU.registers.HL);"
                         };
                     }
                     else if(Regex.IsMatch(parameters[0], "(^AF$)|(^BC$)|(^DE$)|(^HL$)|(^SP$)"))
