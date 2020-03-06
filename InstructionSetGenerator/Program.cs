@@ -883,9 +883,19 @@ namespace InstructionSetGenerator
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
                 }
             },
+            //STOP
             {
                 "STOP",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 0;
+                    int operandLength = 1;
+                    string[] instructionCodeLines = new string[0];
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             {
                 "DI",
