@@ -8,5 +8,6 @@ namespace GBBase.CPU
     {
         IALU ALU { get; }
         IRegisters registers { get; }
+        int BusyCycles { get; set; }
     }
 }
