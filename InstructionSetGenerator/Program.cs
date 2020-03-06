@@ -1116,6 +1116,7 @@ namespace InstructionSetGenerator
             int unparsedCount = 0;
 
             #region Base File Start
+            textFormatter.AppendLine("// --- AUTO GENERATED CODE --- //");
             textFormatter.AppendLine("using System;");
             textFormatter.AppendLine("using System.Collections.Generic;");
             textFormatter.AppendLine("using System.Text;");
