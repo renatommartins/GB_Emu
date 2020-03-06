@@ -984,9 +984,70 @@ namespace InstructionSetGenerator
             #endregion
 
             #region Jumps
+            //JP
             {
                 "JP",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 9999;
+                    int operandLength = 8888;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "^nn$"))
+                    {
+                        cycles = 4;
+                        operandLength = 2;
+                        instructionCodeLines = new string[]
+                        {
+                            $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                            $"gameboy.CPU.registers.PC = value;"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^\\(HL\\)$"))
+                    {
+                        cycles = 1;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.registers.PC = gameboy.CPU.registers.HL;"
+                        };
+                    }
+                    else
+                    {
+                        cycles = 3;
+                        operandLength = 2;
+                        if(Regex.IsMatch(parameters[0], "Z"))
+                        {
+                            instructionCodeLines = new string[]
+                            {
+                                $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                                $"if({(Regex.IsMatch(parameters[0], "N")? "!":"")}gameboy.CPU.registers.ZeroFlag)",
+                                $"{{",
+                                $"\tgameboy.CPU.registers.PC = value;",
+                                $"\tgameboy.CPU.BusyCycles++;",
+                                $"}}"
+                            };
+                        }
+                        else if(Regex.IsMatch(parameters[0], "C"))
+                        {
+                            instructionCodeLines = new string[]
+                            {
+                                $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                                $"if({(Regex.IsMatch(parameters[0], "N")? "!":"")}gameboy.CPU.registers.FullCarryFlag)",
+                                $"{{",
+                                $"\tgameboy.CPU.registers.PC = value;",
+                                $"\tgameboy.CPU.BusyCycles++;",
+                                $"}}"
+                            };
+                        }
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             {
                 "JR",
