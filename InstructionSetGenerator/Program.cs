@@ -841,7 +841,21 @@ namespace InstructionSetGenerator
             },
             {
                 "DAA",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 1;
+                    int operandLength = 0;
+                    string[] instructionCodeLines = new string[]
+                    {
+                        $"byte value = gameboy.CPU.registers.A;",
+                        $"byte result = (byte)(((value / 10) << 4)|((value % 10) << 0));",
+                        $"gameboy.CPU.registers.ZeroFlag = (result == 0? true : false);"
+                    };
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             {
                 "CPL",
