@@ -1334,12 +1334,14 @@ namespace InstructionSetGenerator
             textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
             textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
             textFormatter.AppendLine("");
+            #endregion
+
+            #region Instruction Set
             textFormatter.AppendLine("private static Dictionary<byte, Instruction> _instructionSet = new Dictionary<byte, Instruction>()");
             textFormatter.AppendLine("{");
             textFormatter.IncreaseIndentLevel();
-            #endregion
 
-            for (int i = 0; i < opCodes.Count && i <256; i++)
+            for (int i = 0; i < opCodes.Count && i < 256; i++)
             {
                 string opCodeKey = opCodes[i].Split(' ')[0];
                 //Console.WriteLine(opCodeKey);
@@ -1366,8 +1368,47 @@ namespace InstructionSetGenerator
                 }
             }
 
-            #region Base File End
             textFormatter.AppendLine("};", TextFormatter.IndentChange.Decrease);
+            #endregion
+
+            textFormatter.AppendLine("");
+
+            #region Extended Instruction Set
+            textFormatter.AppendLine("private static Dictionary<byte, Instruction> _extendedInstructionSet = new Dictionary<byte, Instruction>()");
+            textFormatter.AppendLine("{");
+            textFormatter.IncreaseIndentLevel();
+
+            for (int i = 256; i < opCodes.Count; i++)
+            {
+                string opCodeKey = opCodes[i].Split(' ')[0];
+                //Console.WriteLine(opCodeKey);
+                if (instructionParsers.ContainsKey(opCodeKey))
+                {
+                    string generatedCode = null;
+                    if (instructionParsers[opCodeKey] != null)
+                        instructionParsers[opCodeKey].Invoke(i-256, opCodes[i], textFormatter);
+                    else
+                    {
+                        unparsedInstructions.Add(opCodeKey);
+                        unparsedCount++;
+                    }
+
+
+                    if (generatedCode != null)
+                        builder.Append(generatedCode);
+                }
+                else
+                {
+                    Console.WriteLine($"No parser found for {i.ToString("X2")} -> \"{opCodes[i]}\"!!!");
+                    unparsedInstructions.Add(opCodeKey);
+                    unparsedCount++;
+                }
+            }
+
+            textFormatter.AppendLine("};", TextFormatter.IndentChange.Decrease);
+            #endregion
+
+            #region Base File End
             textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
             textFormatter.AppendLine("}", TextFormatter.IndentChange.Decrease);
             #endregion
