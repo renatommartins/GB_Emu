@@ -289,7 +289,8 @@ namespace InstructionSetGenerator
                     int operandLength = 1;
                     string[] instructionCodeLines = new string[]
                     {
-                        $"gameboy.memory.WriteUshort(gameboy.CPU.registers.SP++, gameboy.CPU.registers.{parameters[0]});"
+                        $"gameboy.CPU.registers.SP -= 2;",
+                        $"gameboy.memory.WriteUshort(gameboy.CPU.registers.SP, gameboy.CPU.registers.{parameters[0]});"
                     };
 
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
@@ -308,7 +309,8 @@ namespace InstructionSetGenerator
                     int operandLength = 1;
                     string[] instructionCodeLines = new string[]
                     {
-                        $"gameboy.CPU.registers.{parameters[0]} = gameboy.memory.ReadUshort(gameboy.CPU.registers.SP--);"
+                        $"gameboy.CPU.registers.{parameters[0]} = gameboy.memory.ReadUshort(gameboy.CPU.registers.SP);",
+                        $"gameboy.CPU.registers.SP += 2;",
                     };
 
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
