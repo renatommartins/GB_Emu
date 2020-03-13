@@ -1293,9 +1293,28 @@ namespace InstructionSetGenerator
             #endregion
 
             #region Restarts
+            //RST
             {
                 "RST",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 4;
+                    int operandLength = 0;
+                    string[] instructionCodeLines = new string[0];
+
+                    instructionCodeLines = new string[]
+                    {
+                        $"gameboy.CPU.registers.SP -= 2;",
+                        $"gameboy.memory.WriteUshort(gameboy.CPU.registers.SP, gameboy.CPU.registers.PC);",
+                        $"gameboy.CPU.registers.PC = (ushort) 0x{parameters[0]};"
+                    };
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             #endregion
 
