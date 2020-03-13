@@ -8,9 +8,20 @@ namespace GBBase
     {
         public void Execute(GameboyHardware gameboy, byte opcode, params byte[] operands)
         {
-            AssertOperands(_instructionSet[opcode].operandLength, operands);
-            gameboy.CPU.BusyCycles += _instructionSet[opcode].cycles;
-            _instructionSet[opcode].method(gameboy, operands);
+            if(opcode != 0xCB)
+            {
+                AssertOperands(_instructionSet[opcode].operandLength, operands);
+                gameboy.CPU.BusyCycles += _instructionSet[opcode].cycles;
+                _instructionSet[opcode].method(gameboy, operands);
+            }
+            else
+            {
+                opcode = operands[0];
+                operands = new byte[0];
+                AssertOperands(_extendedInstructionSet[opcode].operandLength, operands);
+                gameboy.CPU.BusyCycles += _extendedInstructionSet[opcode].cycles;
+                _extendedInstructionSet[opcode].method(gameboy, operands);
+            }
         }
 
         public Instruction GetInstruction(byte opcode)
