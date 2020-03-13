@@ -837,9 +837,40 @@ namespace InstructionSetGenerator
             #endregion
 
             #region Miscellaneous
+            //SWAP
             {
                 "SWAP",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 9999;
+                    int operandLength = 8888;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "(^A$)|(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                    {
+                        cycles = 2;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.registers.{parameters[0]} = (byte)(((gameboy.CPU.registers.{parameters[0]} & 0x0F) << 4) | ((gameboy.CPU.registers.{parameters[0]} & 0xF0) >> 4));"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^\\(HL\\)$"))
+                    {
+                        cycles = 4;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"byte value = 0;"
+                        };
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             {
                 "DAA",
