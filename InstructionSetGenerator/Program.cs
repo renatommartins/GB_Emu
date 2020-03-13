@@ -1384,9 +1384,24 @@ namespace InstructionSetGenerator
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
                 }
             },
+            //RETI
             {
                 "RETI",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 4;
+                    int operandLength = 0;
+                    string[] instructionCodeLines = new string[]
+                    {
+                        $"gameboy.CPU.IME = true;",
+                        $"gameboy.CPU.registers.PC = gameboy.memory.ReadUshort(gameboy.CPU.registers.SP);",
+                        $"gameboy.CPU.registers.SP += 2;"
+                    };
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             #endregion
 
