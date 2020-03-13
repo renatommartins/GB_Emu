@@ -1299,6 +1299,8 @@ namespace InstructionSetGenerator
         {
             System.Text.StringBuilder builder = new System.Text.StringBuilder();
             TextFormatter textFormatter = new TextFormatter("\t");
+
+            List<string> unparsedInstructions = new List<string>();
             int unparsedCount = 0;
 
             #region Base File Start
@@ -1347,7 +1349,11 @@ namespace InstructionSetGenerator
                     if (instructionParsers[opCodeKey] != null)
                         instructionParsers[opCodeKey].Invoke(i, opCodes[i], textFormatter);
                     else
+                    {
+                        unparsedInstructions.Add(opCodeKey);
                         unparsedCount++;
+                    }
+                    
 
                     if (generatedCode != null)
                         builder.Append(generatedCode);
@@ -1355,6 +1361,8 @@ namespace InstructionSetGenerator
                 else
                 {
                     Console.WriteLine($"No parser found for {i.ToString("X2")} -> \"{opCodes[i]}\"!!!");
+                    unparsedInstructions.Add(opCodeKey);
+                    unparsedCount++;
                 }
             }
 
@@ -1370,6 +1378,9 @@ namespace InstructionSetGenerator
             writer.Dispose();
 
             Console.WriteLine($"Couldn't parse {unparsedCount} opCodes");
+            Console.WriteLine("Unparsed List:");
+            foreach (string opCodeKey in unparsedInstructions)
+                Console.WriteLine($"\t{opCodeKey}");
 
             isParsing = false;
         }
