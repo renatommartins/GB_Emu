@@ -872,6 +872,7 @@ namespace InstructionSetGenerator
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
                 }
             },
+            //DAA
             {
                 "DAA",
                 (int index, string instruction , TextFormatter textFormatter) =>
@@ -1229,6 +1230,7 @@ namespace InstructionSetGenerator
             #endregion
 
             #region Calls
+            //CALL
             {
                 "CALL",
                 (int index, string instruction , TextFormatter textFormatter) =>
