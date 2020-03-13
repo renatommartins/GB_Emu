@@ -9,5 +9,9 @@ namespace GBBase.CPU
         IALU ALU { get; }
         IRegisters registers { get; }
         int BusyCycles { get; set; }
+        /// <summary>
+        /// Interrupt Master Enable Flag
+        /// </summary>
+        bool IME { get; set; }
     }
 }

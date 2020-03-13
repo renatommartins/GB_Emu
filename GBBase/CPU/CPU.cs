@@ -10,5 +10,6 @@ namespace GBBase.CPU
 
         public IRegisters registers { get; private set; }
         public int BusyCycles { get; set; }
+        public bool IME { get; set; }
     }
 }
