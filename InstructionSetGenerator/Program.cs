@@ -1112,7 +1112,64 @@ namespace InstructionSetGenerator
             #region Calls
             {
                 "CALL",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 9999;
+                    int operandLength = 8888;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "^nn$"))
+                    {
+                        cycles = 6;
+                        operandLength = 2;
+                        instructionCodeLines = new string[]
+                        {
+                            $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                            $"gameboy.CPU.registers.SP -= 2;",
+                            $"gameboy.memory.WriteUshort(gameboy.CPU.registers.SP, gameboy.CPU.registers.PC);",
+                            $"gameboy.CPU.registers.PC = value;"
+                        };
+                    }
+                    else
+                    {
+                        cycles = 3;
+                        operandLength = 2;
+                        if(Regex.IsMatch(parameters[0], "Z"))
+                        {
+                            instructionCodeLines = new string[]
+                            {
+                                $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                                $"if({(Regex.IsMatch(parameters[0], "N")? "!":"")}gameboy.CPU.registers.ZeroFlag)",
+                                $"{{",
+                                $"\tgameboy.CPU.registers.SP -= 2;",
+                                $"\tgameboy.memory.WriteUshort(gameboy.CPU.registers.SP, gameboy.CPU.registers.PC);",
+                                $"\tgameboy.CPU.registers.PC = value;",
+                                $"\tgameboy.CPU.BusyCycles += 3;",
+                                $"}}"
+                            };
+                        }
+                        else if(Regex.IsMatch(parameters[0], "C"))
+                        {
+                            instructionCodeLines = new string[]
+                            {
+                                $"ushort value = (ushort)((operands[0] << 0) | (operands[1] << 8));",
+                                $"if({(Regex.IsMatch(parameters[0], "N")? "!":"")}gameboy.CPU.registers.FullCarryFlag)",
+                                $"{{",
+                                $"\tgameboy.CPU.registers.SP -= 2;",
+                                $"\tgameboy.memory.WriteUshort(gameboy.CPU.registers.SP, gameboy.CPU.registers.PC);",
+                                $"\tgameboy.CPU.registers.PC = value;",
+                                $"\tgameboy.CPU.BusyCycles += 3;",
+                                $"}}"
+                            };
+                        }
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             #endregion
 
