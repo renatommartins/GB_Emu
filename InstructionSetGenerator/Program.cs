@@ -928,9 +928,24 @@ namespace InstructionSetGenerator
                     WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
                 }
             },
+            //SCF
             {
                 "SCF",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 1;
+                    int operandLength = 0;
+                    string[] instructionCodeLines = new string[]
+                    {
+                        $"gameboy.CPU.registers.FullCarryFlag = true;",
+                        $"gameboy.CPU.registers.NegativeFlag = false;",
+                        $"gameboy.CPU.registers.HalfCarryFlag = false;"
+                    };
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             //NOP
             {
