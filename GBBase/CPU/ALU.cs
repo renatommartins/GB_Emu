@@ -933,15 +933,35 @@ namespace GBBase.CPU
 
             if (direction == IALU.RotateDirection.Left)
             {
-                if ((result & 0x80) > 0)
-                    registers.FullCarryFlag = true;
-                result = (result << 1) | ((result & 0x80) > 0? 0x01 : 0x00);
+                if(!useCarry)
+                {
+                    if ((result & 0x80) > 0)
+                        registers.FullCarryFlag = true;
+                    result = (result << 1) | ((result & 0x80) > 0 ? 0x01 : 0x00);
+                }
+                else
+                {
+                    bool currentCarry = registers.FullCarryFlag;
+                    if ((result & 0x80) > 0)
+                        registers.FullCarryFlag = true;
+                    result = (result << 1) | (currentCarry ? 0x01 : 0x00);
+                }
             }
             else
             {
-                if ((result & 0x01) > 0)
-                    registers.FullCarryFlag = true;
-                result = (result >> 1) | ((result & 0x01) > 0? 0x80 : 0x00);
+                if (!useCarry)
+                {
+                    if ((result & 0x01) > 0)
+                        registers.FullCarryFlag = true;
+                    result = (result >> 1) | ((result & 0x01) > 0 ? 0x80 : 0x00);
+                }
+                else
+                {
+                    bool currentCarry = registers.FullCarryFlag;
+                    if ((result & 0x10) > 0)
+                        registers.FullCarryFlag = true;
+                    result = (result >> 1) | (currentCarry ? 0x80 : 0x00);
+                }
             }
 
             registers.NegativeFlag = false;
