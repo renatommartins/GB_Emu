@@ -1044,29 +1044,90 @@ namespace InstructionSetGenerator
             #endregion
 
             #region Rotates and Shifts
-            {
-                "RLCA",
-                null
-            },
-            {
-                "RLA",
-                null
-            },
-            {
-                "RRCA",
-                null
-            },
-            {
-                "RRA",
-                null
-            },
+            //RLC
             {
                 "RLC",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 9999;
+                    int operandLength = 8888;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "(^A$)"))
+                    {
+                        cycles = 1;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.RotateRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.{parameters[0]}, CPU.IALU.RotateDirection.Left, true);"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                    {
+                        cycles = 2;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.RotateRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.{parameters[0]}, CPU.IALU.RotateDirection.Left, true);"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^\\(HL\\)$"))
+                    {
+                        cycles = 4;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"byte value = gameboy.memory.ReadByte(gameboy.CPU.registers.HL);",
+                            $"gameboy.CPU.registers.FullCarryFlag = (value & 0x80) != 0? true : false);",
+                            $"value = (byte)((value << 1) | ((value & 0x80) != 0? 1 : 0));",
+                            $"gameboy.memory.WriteByte(value);"
+                        };
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
+            //RL
             {
                 "RL",
-                null
+                (int index, string instruction , TextFormatter textFormatter) =>
+                {
+                    string[] parameters = instruction.Split(' ')[1].Split(',');
+
+                    string disassembly = Regex.Replace(instruction,"n{1,2}", "0x{0:X}");
+
+                    int cycles = 9999;
+                    int operandLength = 8888;
+                    string[] instructionCodeLines = new string[0];
+
+                    if(Regex.IsMatch(parameters[0], "(^A$)|(^B$)|(^C$)|(^D$)|(^E$)|(^F$)|(^H$)|(^L$)"))
+                    {
+                        cycles = 2;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"gameboy.CPU.ALU.RotateRegister(gameboy.CPU.registers, CPU.IALU.TargetRegister.{parameters[0]}, CPU.IALU.RotateDirection.Left, true);"
+                        };
+                    }
+                    else if(Regex.IsMatch(parameters[0], "^\\(HL\\)$"))
+                    {
+                        cycles = 4;
+                        operandLength = 0;
+                        instructionCodeLines = new string[]
+                        {
+                            $"byte value = gameboy.memory.ReadByte(gameboy.CPU.registers.HL);",
+                            $"gameboy.CPU.registers.FullCarryFlag = (value & 0x80) != 0? true : false);",
+                            $"value = (byte)((value << 1) | ((value & 0x80) != 0? 1 : 0));",
+                            $"gameboy.memory.WriteByte(value);"
+                        };
+                    }
+
+                    WriteInstruction(textFormatter, instruction, index, disassembly, cycles, operandLength, instructionCodeLines);
+                }
             },
             {
                 "RRC",
