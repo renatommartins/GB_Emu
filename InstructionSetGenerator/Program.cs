@@ -1629,7 +1629,10 @@ namespace InstructionSetGenerator
                         instructionParsers[opCodeKey].Invoke(i, opCodes[i], textFormatter);
                     else
                     {
-                        unparsedInstructions.Add(opCodeKey);
+                        if(!unparsedInstructions.Contains(opCodeKey))
+                        {
+                            unparsedInstructions.Add(opCodeKey);
+                        }
                         unparsedCount++;
                     }
                     
@@ -1666,7 +1669,10 @@ namespace InstructionSetGenerator
                         instructionParsers[opCodeKey].Invoke(i-256, opCodes[i], textFormatter);
                     else
                     {
-                        unparsedInstructions.Add(opCodeKey);
+                        if (!unparsedInstructions.Contains(opCodeKey))
+                        {
+                            unparsedInstructions.Add(opCodeKey);
+                        }
                         unparsedCount++;
                     }
 
